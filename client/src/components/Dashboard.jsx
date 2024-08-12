@@ -1,52 +1,48 @@
-// // src/components/Dashboard.js
-// import React, { useState } from 'react';
-// import axios from 'axios';
+import { useState } from 'react';
+import styled from 'styled-components';
 
-// const Dashboard = ({ updateBannerSettings }) => {
-//   const [description, setDescription] = useState('');
-//   const [countdown, setCountdown] = useState(60);
-//   const [link, setLink] = useState('');
-//   const [isVisible, setIsVisible] = useState(true);
+const DashboardWrapper = styled.div`
+  background-color: ${props => props.theme.background};
+  color: ${props => props.theme.text};
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+`;
 
-//   const handleSubmit = async () => {
-//     const data = { description, countdown, link, isVisible };
-//     try{
-//       await axios.post('http://localhost:3000/api/update-banner', data);
-//     }catch(err){
-//       console.log(err);
-//     }
-//     // await axios.post('http://localhost:3000/api/update-banner', data);
-//     updateBannerSettings(data);
-//   };
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
 
-//   return (
-//     <div className="dashboard">
-//       <h2>Dashboard</h2>
-//       <label>
-//         Banner Description:
-//         <input type="text" value={description} onChange={e => setDescription(e.target.value)} />
-//       </label>
-//       <label>
-//         Banner Countdown (seconds):
-//         <input type="number" value={countdown} onChange={e => setCountdown(e.target.value)} />
-//       </label>
-//       <label>
-//         Banner Link:
-//         <input type="text" value={link} onChange={e => setLink(e.target.value)} />
-//       </label>
-//       <label>
-//         Banner Visible:
-//         <input type="checkbox" checked={isVisible} onChange={e => setIsVisible(e.target.checked)} />
-//       </label>
-//       <button onClick={handleSubmit}>Update Banner</button>
-//     </div>
-//   );
-// };
+const FormGroup = styled.div`
+  margin-bottom: 15px;
+`;
 
-// export default Dashboard;
+const Label = styled.label`
+  display: block;
+  margin-bottom: 5px;
+`;
 
+const Input = styled.input`
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
 
-import React, { useState, useEffect } from 'react';
+const Button = styled.button`
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`;
 
 const Dashboard = ({ updateBannerSettings }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -60,44 +56,46 @@ const Dashboard = ({ updateBannerSettings }) => {
   };
 
   return (
-    <div className="dashboard">
+    <DashboardWrapper>
       <h2>Banner Control Dashboard</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Banner Visibility:
-          <input
-            type="checkbox"
-            checked={isVisible}
-            onChange={(e) => setIsVisible(e.target.checked)}
-          />
-        </label>
-        <label>
-          Banner Description:
-          <input
+      <Form onSubmit={handleSubmit}>
+        <FormGroup>
+          <Label>
+            Banner Visibility:
+            <Input
+              type="checkbox"
+              checked={isVisible}
+              onChange={(e) => setIsVisible(e.target.checked)}
+            />
+          </Label>
+        </FormGroup>
+        <FormGroup>
+          <Label>Banner Description:</Label>
+          <Input
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-        </label>
-        <label>
-          Banner Timer (seconds):
-          <input
+        </FormGroup>
+        <FormGroup>
+          <Label>Banner Timer (seconds):</Label>
+          <Input
             type="number"
             value={timer}
             onChange={(e) => setTimer(parseInt(e.target.value))}
           />
-        </label>
-        <label>
-          Banner Link:
-          <input
+        </FormGroup>
+        <FormGroup>
+          <Label>Banner Link:</Label>
+          <Input
             type="url"
             value={link}
             onChange={(e) => setLink(e.target.value)}
           />
-        </label>
-        <button type="submit">Update Banner</button>
-      </form>
-    </div>
+        </FormGroup>
+        <Button type="submit">Update Banner</Button>
+      </Form>
+    </DashboardWrapper>
   );
 };
 

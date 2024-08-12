@@ -1,46 +1,26 @@
-// import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
-// const Banner = ({ description, link, countdownTime, isVisible }) => {
-//   const [timeRemaining, setTimeRemaining] = useState(countdownTime);
+const TimerWrapper = styled.div`
+  font-size: 18px;
+  font-weight: bold;
+`;
 
-//   useEffect(() => {
-//     if (isVisible && countdownTime > 0) {
-//       const timer = setInterval(() => {
-//         setTimeRemaining(prev => prev > 0 ? prev - 1 : 0);
-//       }, 1000);
-
-//       return () => clearInterval(timer);
-//     }
-//   }, [isVisible, countdownTime]);
-
-//   if (!isVisible) return null;
-
-//   return (
-//     <div className="banner">
-//       <p>{description}</p>
-//       <p>Time Remaining: {timeRemaining} seconds</p>
-//       {link && <a href={link} target="_blank" rel="noopener noreferrer">Click Here</a>}
-//     </div>
-//   );
-// };
-
-// export default Banner;
-
-
-import React, { useState, useEffect } from 'react';
-
-const CountdownTimer = ({ initialTime }) => {
+const CountdownTimer = ({ initialTime, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(initialTime);
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeft <= 0) {
+      onComplete();
+      return;
+    }
 
     const timer = setInterval(() => {
       setTimeLeft(prevTime => prevTime - 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timeLeft, onComplete]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -48,7 +28,7 @@ const CountdownTimer = ({ initialTime }) => {
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
-  return <div className="countdown">{formatTime(timeLeft)}</div>;
+  return <TimerWrapper>{formatTime(timeLeft)}</TimerWrapper>;
 };
 
 export default CountdownTimer;

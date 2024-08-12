@@ -1,82 +1,30 @@
-// // import { useState } from 'react'
-// // import reactLogo from './assets/react.svg'
-// // import viteLogo from '/vite.svg'
-// // import './App.css'
-
-// // function App() {
-// //   const [count, setCount] = useState(0)
-
-// //   return (
-// //     <>
-// //       <div>
-// //         <a href="https://vitejs.dev" target="_blank">
-// //           <img src={viteLogo} className="logo" alt="Vite logo" />
-// //         </a>
-// //         <a href="https://react.dev" target="_blank">
-// //           <img src={reactLogo} className="logo react" alt="React logo" />
-// //         </a>
-// //       </div>
-// //       <h1>Vite + React</h1>
-// //       <div className="card">
-// //         <button onClick={() => setCount((count) => count + 1)}>
-// //           count is {count}
-// //         </button>
-// //         <p>
-// //           Edit <code>src/App.jsx</code> and save to test HMR
-// //         </p>
-// //       </div>
-// //       <p className="read-the-docs">
-// //         Click on the Vite and React logos to learn more
-// //       </p>
-// //     </>
-// //   )
-// // }
-
-// // export default App
-
-
-// import { useEffect, useState } from 'react';
-// import axios from 'axios';
-// import Banner from './components/Banner';
-// import Dashboard from './components/Dashboard';
-
-// const App = () => {
-//   const [bannerSettings, setBannerSettings] = useState({
-//     description: '',
-//     countdown: 60,
-//     link: '',
-//     isVisible: true
-//   });
-
-//   useEffect(() => {
-//     try {
-//       axios.get('http://localhost:3000/api/banner-settings')
-//         .then(response => setBannerSettings(response.data))
-//         .catch(error => console.error('Error fetching banner settings:', error));
-//     } catch (error) {
-//       console.log(error);
-//     }
-
-//   }, []);
-
-//   const updateBannerSettings = (newSettings) => {
-//     setBannerSettings(newSettings);
-//   };
-
-//   return (
-//     <div>
-//       <Banner {...bannerSettings} />
-//       <Dashboard updateBannerSettings={updateBannerSettings} />
-//     </div>
-//   );
-// };
-
-// export default App;
-
-
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
+import styled, { ThemeProvider } from 'styled-components';
 import Banner from './components/Banner';
 import Dashboard from './components/Dashboard';
+import NightModeSlider from './components/NightModeSlider';
+
+const lightTheme = {
+  background: '#f0f0f0',
+  text: '#333',
+  bannerBg: '#e0e0e0',
+  bannerText: '#333',
+};
+
+const darkTheme = {
+  background: '#333',
+  text: '#f0f0f0',
+  bannerBg: '#555',
+  bannerText: '#f0f0f0',
+};
+
+const AppWrapper = styled.div`
+  background-color: ${props => props.theme.background};
+  color: ${props => props.theme.text};
+  min-height: 100vh;
+  padding: 20px;
+  transition: all 0.3s ease;
+`;
 
 const App = () => {
   const [bannerSettings, setBannerSettings] = useState({
@@ -85,25 +33,26 @@ const App = () => {
     timer: 0,
     link: '',
   });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Fetch initial banner settings from the server
     fetchBannerSettings();
   }, []);
 
   const fetchBannerSettings = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/banner-settings');
+      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URI}/api/banner-settings`);
       const data = await response.json();
       setBannerSettings(data);
     } catch (error) {
       console.error('Error fetching banner settings:', error);
     }
   };
-
+console.log(import.meta.env.VITE_APP_BACKEND_URI);
   const updateBannerSettings = async (newSettings) => {
+    
     try {
-      const response = await fetch('http://localhost:3000/api/banner-settings', {
+      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URI}/api/banner-settings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,10 +67,13 @@ const App = () => {
   };
 
   return (
-    <div className="app">
-      <Banner {...bannerSettings} />
-      <Dashboard updateBannerSettings={updateBannerSettings} />
-    </div>
+    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <AppWrapper>
+        <NightModeSlider isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+        <Banner {...bannerSettings} />
+        <Dashboard updateBannerSettings={updateBannerSettings} />
+      </AppWrapper>
+    </ThemeProvider>
   );
 };
 

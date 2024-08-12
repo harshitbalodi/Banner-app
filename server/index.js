@@ -18,9 +18,12 @@ try {
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
+    port:process.env.DATABASE_PORT,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    connectTimeout:10000,
+    ssl: { rejectUnauthorized: false },
   });
 
   console.log('Connected to MySQL database successfully');
@@ -29,39 +32,25 @@ try {
   process.exit(1); 
 }
 
-// app.post('/api/update-banner', async (req, res) => {
-//   const { description, countdown, link, isVisible } = req.body;
-//   const query = `
-//     UPDATE banner_settings 
-//     SET description = ?, countdown = ?, link = ?, isVisible = ?
-//   `;
-//   try {
-//     console.log("api hit", count++);
-//     const [result] = await db.execute(query, [description, countdown, link, isVisible]);
-//     res.send(result);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
-
-// app.get('/api/banner-settings', async (req, res) => {
-//   const query = 'SELECT * FROM banner_settings LIMIT 1';
-//   try {
-//     console.log("api hit",count++);
-//     const [result] = await db.execute(query);
-//     res.send(result[0]);
-//   } catch (err) {
-//     res.status(500).send(err);
-//   }
-// });
 
 app.get('/api', (req, res) => {
   res.send('Hello, World!');
 })
 
+app.post('/api/create-table', async(req, res) => {
+  try {
+    await db.execute('CREATE TABLE banner_settings (id INT PRIMARY KEY AUTO_INCREMENT,is_visible BOOLEAN NOT NULL DEFAULT FALSE,description TEXT,timer INT NOT NULL DEFAULT 0,link VARCHAR(255));');
+    res.status(201).json({ message: 'Table created successfully' });
+  } catch (error) {
+    console.error('Error creating table:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+})
+
 app.get('/api/banner-settings', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM banner_settings LIMIT 1');
+    console.log("api hit",count++);
+    const [rows] = await db.execute('SELECT * FROM banner_settings LIMIT 1');
     res.json(rows[0] || {});
   } catch (error) {
     console.error('Error fetching banner settings:', error);
@@ -72,7 +61,8 @@ app.get('/api/banner-settings', async (req, res) => {
 app.post('/api/banner-settings', async (req, res) => {
   const { isVisible, description, timer, link } = req.body;
   try {
-    await db.query(
+    console.log("api hit",count++);
+    await db.execute(
       'INSERT INTO banner_settings (is_visible, description, timer, link) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE is_visible = ?, description = ?, timer = ?, link = ?',
       [isVisible, description, timer, link, isVisible, description, timer, link]
     );
@@ -84,4 +74,5 @@ app.post('/api/banner-settings', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('Server running on port ' + PORT));
+app.listen(PORT, () => console.log('Server running on port ' ,PORT));
+
