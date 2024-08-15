@@ -101,9 +101,9 @@ The backend should now be running on `http://localhost:3000`.
 
 ## Contact
 
-Your Name - balodiharshit1907@example.com
+Your Name - balodiharshit1907@gmail.com
 
-Project Link: [https://github.com/yourusername/banner-app](https://github.com/harshitbalodi/banner-app)
+Project Link: [https://github.com/harshitbalodi/banner-app](https://github.com/harshitbalodi/banner-app)
 
 
 
